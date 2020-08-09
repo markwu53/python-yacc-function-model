@@ -7,17 +7,17 @@ T = namedtuple("T", "t v")
 def nothing(p): return R(True, p, [])
 def tx(x): return R(True, x.p, x.r)
 def fx(x): return R(False, x.p, x.r)
-def abind(x, f): return (lambda y: R(y.s,y.p,[x.r,y.r]) if y.s else fx(x))(f(x.p)) if x.s else fx(x)
-def cbind(p, x, f): return (lambda y: y if y.s else fx(nothing(p)))(abind(x, f))
+def zbind(x, f): return (lambda y: R(y.s,y.p,[x.r,y.r]) if y.s else fx(x))(f(x.p)) if x.s else fx(x)
+def sbind(p, x, f): return (lambda y: y if y.s else fx(nothing(p)))(zbind(x, f))
 def pbind(x, f): return x if x.s else f(x.p)
-def S(*fs): return lambda p: reduce(partial(cbind, p), fs, nothing(p))
+def S(*fs): return lambda p: reduce(partial(sbind, p), fs, nothing(p))
 def P(*fs): return lambda p: reduce(pbind, fs, fx(nothing(p)))
 def O(f): return P(f, nothing)
 def Z(f):
     def fp(p):
         x = nothing(p)
         while x.s:
-            x = abind(x, f)
+            x = zbind(x, f)
         return tx(x)
     return fp
 def M(f): return S(f, Z(f))
