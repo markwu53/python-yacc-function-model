@@ -95,7 +95,7 @@ def parse_yacc(tokens):
     def get_token(p): return get_item(p, tokens)
     def check_token(good): return check_item(good, get_token)
     def ttype(type): return check_token(lambda t: t.t == type)
-    def s(c): return check_token(lambda tc: c==tc.v)
+    def s(c): return postr(p1,check_token(lambda tc: c==tc.v))
 
     defined_terms = set()
  
